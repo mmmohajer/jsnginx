@@ -9,4 +9,4 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./site:/var/www/app/site
+      - ./site:/var/www/app
