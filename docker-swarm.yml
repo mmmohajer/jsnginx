@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  nginx:
+    image: ${NGINX_REPO}:${NGINX_VERSION}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./site:/var/www/app
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+    networks:
+      - appnetwork
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - ./nginx/certbot/www:/var/www/certbot
+      - ./nginx/certbot/conf:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do sleep 6h & wait $${!}; certbot renew; done'"
+    networks:
+      - appnetwork
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  appnetwork:
+    driver: overlay

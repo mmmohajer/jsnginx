@@ -1,0 +1,10 @@
+FROM nginx:1.20.2-alpine
+
+COPY ./default-swarm.conf /etc/nginx/conf.d/default.conf
+COPY ./gzip.conf /etc/nginx/conf.d/gzip.conf
+
+RUN mkdir -p /var/www/app/static && \
+    chmod 755 /var/www/app/static
+
+ARG APP_URL
+RUN sed -i "s|\$APP_URL|$APP_URL|g" /etc/nginx/conf.d/default.conf
